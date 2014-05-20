@@ -160,6 +160,8 @@ def fixup_script_(root, file_, old_dir, new_dir, version,
             rewrite_shebang()
         elif bang[len(env_shebang):] == version:
             rewrite_shebang(version)
+    elif bang != new_shebang:
+        rewrite_shebang()
     else:
         # can't do anything
         return

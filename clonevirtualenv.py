@@ -78,6 +78,7 @@ def clone_virtualenv(src_dir, dst_dir):
     version, sys_path = _virtualenv_sys(dst_dir)
     logger.info('fixing scripts in bin...')
     fixup_scripts(src_dir, dst_dir, version)
+    fixup_local_folder(dst_dir)
 
     has_old = lambda s: any(i for i in s if _dirmatch(i, src_dir))
 
@@ -89,6 +90,18 @@ def clone_virtualenv(src_dir, dst_dir):
     v_sys = _virtualenv_sys(dst_dir)
     remaining = has_old(v_sys[1])
     assert not remaining, v_sys
+
+
+def fixup_local_folder(dst_dir):
+    links = ['bin', 'lib', 'include']
+    for item in links:
+        # remove old link
+        link = os.path.join(dst_dir, 'local', item)
+        os.unlink(link)
+
+        # create new link
+        source = os.path.join(dst_dir, item)
+        os.symlink(source, link)
 
 
 def fixup_scripts(old_dir, new_dir, version, rewrite_env_python=False):
